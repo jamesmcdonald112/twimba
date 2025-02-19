@@ -11,6 +11,12 @@ document.addEventListener('click', function(e){
     else if(e.target.dataset.reply){
         handleReplyClick(e.target.dataset.reply)
     }
+    else if (e.target.dataset.response) {
+        handleResponseClick(e.target.dataset.response)
+    }
+    else if(e.target.dataset.responseButton) {
+        handleResponseSubmit(e.target.dataset.responseButton)
+    }
     else if(e.target.id === 'tweet-btn'){
         handleTweetBtnClick()
     }
@@ -71,6 +77,46 @@ function handleTweetBtnClick(){
 
 }
 
+function handleResponseClick(tweetId) {
+    const responseInputBox = document.getElementById(`response-container-${tweetId}`)
+
+    if(responseInputBox) {
+        responseInputBox.remove()
+        return
+    }
+    
+
+    const responseHtml = `
+        <div id="response-container-${tweetId}" class="response-container">
+            <textarea id="response-text-${tweetId}" placeholder="Write your reply..."></textarea>
+            <button data-response-button="${tweetId}">Reply</button>
+        </div>
+    `
+
+    document.getElementById(`replies-${tweetId}`).insertAdjacentHTML('beforebegin', responseHtml)
+}
+
+function handleResponseSubmit(tweetId) {
+    const responseText = document.getElementById(`response-text-${tweetId}`).value.trim()
+
+    if(!responseText) {
+        return 
+    }
+    
+    const reply = {
+        handle: '@Scrimba',
+        profilePic: `images/scrimbalogo.png`,
+        tweetText: responseText
+    }
+    
+    const targetTweet = tweetsData.find(tweet => tweet.uuid === tweetId)
+
+    targetTweet.replies.push(reply)
+
+    render()
+    document.getElementById(`response-container-${tweetId}`)?.remove()
+}
+
 function getFeedHtml(){
     let feedHtml = ``
     
@@ -87,6 +133,8 @@ function getFeedHtml(){
         if (tweet.isRetweeted){
             retweetIconClass = 'retweeted'
         }
+
+        let responseIconClass = tweet.replies.length > 0 ? 'has-replies' : ''
         
         let repliesHtml = ''
         
@@ -132,6 +180,11 @@ function getFeedHtml(){
                     data-retweet="${tweet.uuid}"
                     ></i>
                     ${tweet.retweets}
+                </span>
+                <span class="tweet-detail">
+                    <i class="fa-solid fa-reply ${responseIconClass}"
+                    data-response="${tweet.uuid}"
+                    ></i>
                 </span>
             </div>   
         </div>            

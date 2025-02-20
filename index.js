@@ -17,6 +17,9 @@ document.addEventListener('click', function(e){
     else if(e.target.dataset.responseButton) {
         handleResponseSubmit(e.target.dataset.responseButton)
     }
+    else if(e.target.dataset.delete) {
+        handleDeleteClick(e.target.dataset.delete)
+    }
     else if(e.target.id === 'tweet-btn'){
         handleTweetBtnClick()
     }
@@ -73,6 +76,7 @@ function handleTweetBtnClick(){
             replies: [],
             isLiked: false,
             isRetweeted: false,
+            isUserTweet: true,
             uuid: uuidv4()
         })
 
@@ -124,6 +128,17 @@ function handleResponseSubmit(tweetId) {
     document.getElementById(`response-container-${tweetId}`)?.remove()
 }
 
+function handleDeleteClick(tweetId) {
+    const filteredTweets = tweetsData.filter(tweet => tweet.uuid !== tweetId)
+
+    tweetsData.length = 0;
+
+    tweetsData.push(...filteredTweets)
+
+    saveTweetsToLocalStorage()
+    render()
+}
+
 function saveTweetsToLocalStorage() {
     console.log("Saving tweetsData to local storage:", tweetsData)
     localStorage.setItem('tweetsData', JSON.stringify(tweetsData));
@@ -167,6 +182,18 @@ function getFeedHtml(){
         let responseIconClass = tweet.replies.length > 0 ? 'has-replies' : ''
         
         let repliesHtml = ''
+
+        let deleteIcon = ''
+
+        if(tweet.isUserTweet) {
+            deleteIcon = `
+            <span class="tweet-detail">
+                <i class="fa-solid fa-trash"
+                data-delete="${tweet.uuid}"
+                ></i>
+            </span>
+            `
+        }
         
         if(tweet.replies.length > 0){
             tweet.replies.forEach(function(reply){
@@ -216,8 +243,9 @@ function getFeedHtml(){
                     data-response="${tweet.uuid}"
                     ></i>
                 </span>
+                ${deleteIcon}
             </div>   
-        </div>            
+        </div>          
     </div>
     <div class="hidden" id="replies-${tweet.uuid}">
         ${repliesHtml}

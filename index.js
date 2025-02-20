@@ -88,7 +88,7 @@ function handleResponseClick(tweetId) {
 
     const responseHtml = `
         <div id="response-container-${tweetId}" class="response-container">
-            <textarea id="response-text-${tweetId}" placeholder="Write your reply..."></textarea>
+            <textarea id="response-text-${tweetId}" placeholder="Write your reply..." class="response-textarea"></textarea>
             <button data-response-button="${tweetId}">Reply</button>
         </div>
     `

@@ -118,6 +118,24 @@ button{
     line-height: 20px;
 }
 
+/* Response */
+.response-container {
+    display: flex;
+    flex-direction: column;
+    width: 85%;
+    max-width: 500px;
+    margin: 0 10px 0 auto;
+
+}
+
+.response-textarea {
+    margin-top: 10px;
+    font-size: 14px;
+    height: 120px;
+    border: 1px solid #555;
+    border-radius: 10px;
+}
+
 /* images */
 
 .profile-pic{

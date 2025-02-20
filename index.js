@@ -34,6 +34,8 @@ function handleLikeClick(tweetId){
         targetTweetObj.likes++ 
     }
     targetTweetObj.isLiked = !targetTweetObj.isLiked
+
+    saveTweetsToLocalStorage()
     render()
 }
 
@@ -49,6 +51,8 @@ function handleRetweetClick(tweetId){
         targetTweetObj.retweets++
     }
     targetTweetObj.isRetweeted = !targetTweetObj.isRetweeted
+
+    saveTweetsToLocalStorage()
     render() 
 }
 
@@ -71,6 +75,8 @@ function handleTweetBtnClick(){
             isRetweeted: false,
             uuid: uuidv4()
         })
+
+    saveTweetsToLocalStorage()
     render()
     tweetInput.value = ''
     }
@@ -113,8 +119,32 @@ function handleResponseSubmit(tweetId) {
 
     targetTweet.replies.push(reply)
 
+    saveTweetsToLocalStorage()
     render()
     document.getElementById(`response-container-${tweetId}`)?.remove()
+}
+
+function saveTweetsToLocalStorage() {
+    console.log("Saving tweetsData to local storage:", tweetsData)
+    localStorage.setItem('tweetsData', JSON.stringify(tweetsData));
+}
+
+function loadTweetsFromLocalStorage() {
+    const storedTweets = localStorage.getItem('tweetsData')
+    
+    if(storedTweets) {
+        try{
+            const parsedTweets = JSON.parse(storedTweets)
+
+            if(Array.isArray(parsedTweets)) {
+                tweetsData.length = 0;
+                tweetsData.push(...parsedTweets)
+            }
+        } catch(error) {
+            console.error("Error parsing tweetsData from local storage:", error)
+        }
+        
+    }
 }
 
 function getFeedHtml(){
@@ -202,5 +232,6 @@ function render(){
     document.getElementById('feed').innerHTML = getFeedHtml()
 }
 
+loadTweetsFromLocalStorage()
 render()
 
